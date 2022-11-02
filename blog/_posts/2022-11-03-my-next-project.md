@@ -41,6 +41,7 @@ date: 2022-11-03
   - Vue
   - Ember
   - Svelte
+  - Tooling - typescript, eslint, prettier, webpack, turbopack, etc...
   - кроме прочего, нужно выбрать библиотеку компонент и css-framework (tailwind, bootstrap, foundation)
 - системы виртуализации-контейнеризации
   - Docker (kubernetes)
