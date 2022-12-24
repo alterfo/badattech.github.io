@@ -1,6 +1,6 @@
 <template>
   <header class="site-header" id="large-header">
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas">Oh no! Your browser doesn't support canvas!</canvas>
 
     <div :class="`animation-toggler ${animateHeader ? 'top-1' : 'top-2'}`">
       <a
@@ -25,107 +25,92 @@
 import Socials from "./Socials";
 import Vue from 'vue'
 
+//todo: https://www.youtube.com/watch?v=PWjIeJDE7Rc
+
 export default {
   components: {
     Socials,
   },
   data: function () {
     return {
-      animateHeader: false,
+      animateHeader: true,
+      gl: null,
+      raf: window.requestAnimationFrame,
+      craf: window.cancelAnimationFrame,
+      numOfParticles: 0
     };
   },
   computed: {
     title() {
       return this.$page.title;
     },
+    path() {
+      return this.$page.path;
+    }
   },
   mounted() {
-    const self = this;
-
-    const requestAnimationFrame =
-      window.requestAnimationFrame ||
-      window.mozRequestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      window.msRequestAnimationFrame;
-
-    const cancelAnimationFrame =
-      window.cancelAnimationFrame || window.mozCancelAnimationFrame;
-
-    let particles;
-    let numOfParticles;
-    let largeHeader = document.getElementById("large-header");
     let canvas =
       "OffscreenCanvas" in window
         ? document.getElementById("canvas").transferControlToOffscreen()
         : document.getElementById("canvas");
-    let ctx = canvas.getContext("2d");
-    let width;
-    let height;
-    let raf;
-
+    this.gl = canvas.getContext("webgl2");
+    if (this.gl === null) {
+      alert("Unable to initialize WebGL. Your browser or machine may not support it.");
+      return;
+    }
     // Main
-    initHeader();
-    addListeners();
+    let {width, height} = this.setHeaderDimensions(canvas);
+    this.initParticles(width, height);
 
-    function Particle() {
-      this.location = {
-        x: Math.random() * width,
-        y: Math.random() * height,
-      };
-      this.speed = Math.random();
-      this.angle = Math.random() * 360;
+    window.addEventListener("scroll", this.stopAnimationWhenScrolledOut);
+    window.addEventListener("resize", this.setHeaderDimensions);
 
-      const r = Math.round(Math.random() * 255);
-      const g = Math.round(Math.random() * 255);
-      const b = Math.round(Math.random() * 255);
-      const a = Math.random() * 0.5;
-      this.rgba = "rgba(" + r + ", " + g + "," + b + ", " + a + ")";
-    }
+    // function drawConnections() {
+    //   // !!! uncomment these in case if you have a good GPU cooler
+    //   this.gl.globalCompositeOperation = "source-over";
+    //   this.gl.fillStyle = "rgba(1, 1, 1, 0.2)";
+    //   this.gl.globalCompositeOperation = "lighter";
+    //
+    //   for (let i = 0; i < particles.length; i++) {
+    //     const p = particles[i];
+    //     this.gl.beginPath();
+    //
+    //     for (let n = 0; n < particles.length; n++) {
+    //       const p2 = particles[n];
+    //       const yd = p2.location.y - p.location.y;
+    //       const xd = p2.location.x - p.location.x;
+    //       const distance = Math.sqrt(xd * xd + yd * yd);
+    //
+    //       if (distance < 140) {
+    //         this.gl.lineWidth = 1;
+    //         this.gl.moveTo(p.location.x, p.location.y);
+    //         this.gl.lineTo(p2.location.x, p2.location.y);
+    //       }
+    //     }
+    //     this.gl.strokeStyle = p.rgba;
+    //     this.gl.stroke();
+    //
+    //     p.location.x =
+    //       p.location.x + p.speed * Math.cos((p.angle * Math.PI) / 180);
+    //     p.location.y =
+    //       p.location.y + p.speed * Math.sin((p.angle * Math.PI) / 180);
+    //
+    //     if (p.location.x < 0) p.location.x = width + 50;
+    //     if (p.location.x > width + 50) p.location.x = 0;
+    //     if (p.location.y < 0) p.location.y = height + 50;
+    //     if (p.location.y > height + 50) p.location.y = 0;
+    //   }
+    // }
+  },
+  methods: {
+    setHeaderDimensions(canvas) {
+      let largeHeader = document.getElementById("large-header");
+      let width;
+      let height;
 
-    function drawConnections() {
-      // !!! uncomment these in case if you have a good GPU cooler
-      // ctx.globalCompositeOperation = "source-over";
-      // ctx.fillStyle = "rgba(1, 1, 1, 0.2)";
-      canvas.width = width;
-      // ctx.fillRect(0, 0, width, height);
-
-      ctx.globalCompositeOperation = "lighter";
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        ctx.beginPath();
-
-        for (let n = 0; n < particles.length; n++) {
-          const p2 = particles[n];
-          const yd = p2.location.y - p.location.y;
-          const xd = p2.location.x - p.location.x;
-          const distance = Math.sqrt(xd * xd + yd * yd);
-
-          if (distance < 140) {
-            ctx.lineWidth = 1;
-            ctx.moveTo(p.location.x, p.location.y);
-            ctx.lineTo(p2.location.x, p2.location.y);
-          }
-        }
-        ctx.strokeStyle = p.rgba;
-        ctx.stroke();
-
-        p.location.x =
-          p.location.x + p.speed * Math.cos((p.angle * Math.PI) / 180);
-        p.location.y =
-          p.location.y + p.speed * Math.sin((p.angle * Math.PI) / 180);
-
-        if (p.location.x < 0) p.location.x = width + 50;
-        if (p.location.x > width + 50) p.location.x = 0;
-        if (p.location.y < 0) p.location.y = height + 50;
-        if (p.location.y > height + 50) p.location.y = 0;
-      }
-    }
-
-    function initHeader() {
-      cancelAnimationFrame(raf);
       width = window.innerWidth;
-      height = window.innerWidth / (self.$page.path === "/" ? 2 : 4);
+      height = window.innerWidth / (this.path === "/" ? 2 : 4);
+
       largeHeader.style.height = height + "px";
       largeHeader.style.width = width + "px";
       largeHeader.style.overflow = "hidden";
@@ -133,35 +118,46 @@ export default {
       canvas.width = width;
       canvas.height = height;
 
-      particles = [];
+      this.gl.viewport(0, 0, canvas.width, canvas.height);
+      this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-      numOfParticles = height / 5; // do we need a slider?
+      return {width, height}
+    },
 
-      for (var i = 0; i < numOfParticles; i++) { 
-        particles.push(new Particle());
+    stopAnimationWhenScrolledOut() {
+      this.animateHeader =
+          this.animateHeader && document.documentElement.scrollTop < height / 2;
+    },
+
+    initParticles(w, h) {
+      let particles = new Array(this.numOfParticles || Math.floor(h / 5)).fill().map((_) => {
+        return this.newRandomParticle(w, h)
+      });
+
+      // drawConnections()
+      console.table(particles);
+      return particles;
+    },
+
+    randomRGBA() {
+      const r = Math.round(Math.random() * 255);
+      const g = Math.round(Math.random() * 255);
+      const b = Math.round(Math.random() * 255);
+      const a = Math.random() * 0.5;
+      return "rgba(" + r + ", " + g + "," + b + ", " + a + ")";
+    },
+
+    newRandomParticle(w, h) {
+      return {
+        locationX: Math.random() * w,
+        locationY: Math.random() * h,
+        speed: Math.random(),
+        angle: Math.random() * 360,
+        color: this.randomRGBA()
       }
-      drawConnections()
-
-      function draw(secondsFromStart) {
-        if (self.animateHeader) {
-          drawConnections();
-        }
-        raf = requestAnimationFrame(draw);
-      }
-
-      raf = requestAnimationFrame(draw);
     }
-
-    // Event handling
-    function addListeners() {
-      window.addEventListener("scroll", disableWhenScrolledHalf);
-      window.addEventListener("resize", initHeader); // do we need keep state?
-    }
-    function disableWhenScrolledHalf() {
-      self.animateHeader =
-        self.animateHeader && document.documentElement.scrollTop < height / 2;
-    }
-  },
+  }
 };
 </script>
 
@@ -213,7 +209,7 @@ export default {
     left: 50%;
     -webkit-transform: translate3d(-50%, -50%, 0);
     transform: translate3d(-50%, -50%, 0);
-    transition: opacity 2s ease-in-out 1s;
+    //transition: opacity 2s ease-in-out 1s;
     transition: transform 2s ease-in-out 1s;
 
   }

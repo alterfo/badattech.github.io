@@ -15,9 +15,12 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@vuepress/plugin-blog": "^1.9.2",
-    "@vuepress/plugin-google-analytics": "^1.5.4",
-    "@vuepress/theme-blog": "^2.3.2",
-    "vuepress": "^1.5.4"
+    "webpack": "4.46.0",
+    "cache-loader": "4.1.0",
+    "vue": "2.7.14",
+    "@vuepress/plugin-blog": "1.9.4",
+    "@vuepress/plugin-google-analytics": "1.9.7",
+    "@vuepress/theme-blog": "2.3.3",
+    "vuepress": "1.9.7"
   }
 }
