@@ -48,10 +48,10 @@ export default {
           icon: "github",
         },
         {
-          username: "alterforia",
-          href: "https://soundcloud.com/",
-          title: "SoundCloud",
-          icon: "soundcloud",
+          username: "@alterforia",
+          href: "https://www.youtube.com/",
+          title: "YouTube",
+          icon: "youtube",
         },
         {
           username: "alexiy-dorkin",
