@@ -1,13 +1,13 @@
 {
-  "name": "alterforia",
-  "version": "0.0.1",
-  "description": "Персональный блог разработчика, музыканта, человека.",
+  "name": "alterfo.github.io-src",
+  "version": "0.1.1",
+  "description": "Персональный блог Олега Сидоркина.",
   "main": "index.js",
   "authors": {
-    "name": "Alterfo",
-    "email": "kalinon7@gmail.com"
+    "name": "Oleg Sidorkin",
+    "email": "osidorkin85@gmail.com"
   },
-  "repository": "https://github.com/alterfo/alterfo.github.io/Alterforia",
+  "repository": "https://github.com/alterfo/alterfo.github.io-src.git",
   "scripts": {
     "dev": "vuepress dev blog",
     "build": "vuepress build blog",

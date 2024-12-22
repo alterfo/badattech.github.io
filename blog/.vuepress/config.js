@@ -1,7 +1,7 @@
 const { description } = require('../../package')
 
 module.exports = {
-  title: 'Alterforia',
+  title: 'Блог',
   description: description,
   head: [
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
@@ -11,7 +11,7 @@ module.exports = {
 
   themeConfig: {
     footer: {
-      text: 'Alterforia - персональный блог разработчика, музыканта и человека.'
+      text: 'Персональный блог человека, разработчика и музыканта.'
     }
   },
 

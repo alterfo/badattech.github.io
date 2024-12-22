@@ -6,7 +6,7 @@
       <a
         href="javascript:void(0)"
         @click="animateHeader = !animateHeader"
-      >{{ animateHeader ? 'Выкл!' : 'Вкл!' }}</a>
+      >{{ animateHeader ? 'Выключить анимацию!' : 'Включить анимацию!' }}</a>
     </div>
 
     <div class="page-title" v-if="$page.title" :style="{opacity: animateHeader ? 0 : 1}">{{ $page.title }}</div>
@@ -84,10 +84,10 @@ export default {
 
     function drawConnections() {
       // !!! uncomment these in case if you have a good GPU cooler
-      // ctx.globalCompositeOperation = "source-over";
-      // ctx.fillStyle = "rgba(1, 1, 1, 0.2)";
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = "rgba(1, 1, 1, 0.2)";
       canvas.width = width;
-      // ctx.fillRect(0, 0, width, height);
+      ctx.fillRect(0, 0, width, height);
 
       ctx.globalCompositeOperation = "lighter";
 
@@ -137,7 +137,7 @@ export default {
 
       numOfParticles = height / 5; // do we need a slider?
 
-      for (var i = 0; i < numOfParticles; i++) { 
+      for (var i = 0; i < numOfParticles; i++) {
         particles.push(new Particle());
       }
       drawConnections()
@@ -184,6 +184,7 @@ export default {
   .animation-toggler {
     position: absolute;
     right: 3em;
+    font-size: 2em;
 
     a {
       color: yellow;
